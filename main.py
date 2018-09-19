@@ -84,7 +84,7 @@ if not os.path.exists(mtlfile):
     mtl = desitarget.mtl.make_mtl(targetdata)
 
     # only include BGS and MWS
-    isbgsmws = (mtl['BGS_TARGET']!=0) | (mtl['MWS_TARGET']!=0)
+    isbgsmws = ((mtl['BGS_TARGET']!=0) | (mtl['MWS_TARGET']!=0))
     if program=="bright":
         mtl = mtl[isbgsmws]
     else:
@@ -131,7 +131,7 @@ cmd += " --sky {} ".format(skyfile)
 cmd += " --stdstar {} ".format(starfile)
 cmd += " --fibstatusfile ./fiberstatus.ecsv"
 cmd += " --footprint {} ".format(tilefile)
-cmd += " --outdir {} ".format(fiber_dir)
+cmd += " --outdir {} ".format(fiberdir)
 
 print(cmd)
 print('starting fiberassign')
