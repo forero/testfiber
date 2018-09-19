@@ -27,10 +27,18 @@ targetfile = os.path.join(paths["targets"], "targets-{}".format(names["targets"]
 mtlfile = './data/mtl.fits'
 starfile = './data/std.fits'
 if (not os.path.exists(mtlfile)) or (not os.path.exists(starfile)):
-    columns = [
+    columns=['TARGETID','SUBPRIORITY', 'BRICKID', 'BRICK_OBJID', 'REF_ID',
+            'PMRA', 'PMDEC', 'PMRA_IVAR', 'PMDEC_IVAR', 'FLUX_G', 'FLUX_R', 'FLUX_Z',
+            'FLUX_W1', 'FLUX_W2', 'FLUX_IVAR_G', 'FLUX_IVAR_R', 'FLUX_IVAR_Z',
+            'FLUX_IVAR_W1', 'FLUX_IVAR_W2', 'RA_IVAR', 'DEC_IVAR',
+            'EBV', 'MORPHTYPE',
+            'MW_TRANSMISSION_G', 'MW_TRANSMISSION_R', 'MW_TRANSMISSION_Z',
+            'PHOTSYS',
+            'FIBERFLUX_G', 'FIBERFLUX_R', 'FIBERFLUX_Z', 
+             'FIBERTOTFLUX_G', 'FIBERTOTFLUX_R', 'FIBERTOTFLUX_Z', 'HPXPIXEL',
         'TARGETID', 'RA', 'DEC', 'SUBPRIORITY', 'BRICKNAME',
-        'DESI_TARGET', 'BGS_TARGET', 'MWS_TARGET',
-    ]
+        'DESI_TARGET', 'BGS_TARGET', 'MWS_TARGET']
+
     targetdata = fitsio.read(targetfile, 'TARGETS', columns=columns)
     print('Done reading target data to comput mtl + star')
 
@@ -74,10 +82,6 @@ if not os.path.exists(starfile):
     fitsio.write(starfile, stardata, extname='STD')
     print('{} dark standards'.format(np.count_nonzero(stardata)))
     print('Finished with standards')
-
-output_bright = 'output/'
-if not os.path.exists(output_bright):
-    os.makedirs(output_bright)
     
 skyfile = '/project/projectdirs/desi/target/catalogs/dr7.1/0.22.0/skies-dr7.1-0.22.0.fits'
 cmd = "fiberassign --mtl {} ".format(mtlfile)
