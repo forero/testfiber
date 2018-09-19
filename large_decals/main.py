@@ -9,11 +9,17 @@ import glob
 from desisim.quickcat import quickcat
 import desimodel.io
 # tile selection
-tilefile = "./data/dark_gray_tiles.fits"
-if not os.path.exists(tilefile):
-    tiles = desimodel.io.load_tiles()
-    bright = tiles['PROGRAM']=='BRIGHT'
-    Table(tiles[~bright]).write(tilefile)
+program = "bright"
+if program == "bright":
+    tilefile = "./data/{}_tiles.fits".format(program)
+    if not os.path.exists(tilefile):
+        tiles = desimodel.io.load_tiles()
+        bright = tiles['PROGRAM']=='BRIGHT'
+        if program=="bright":
+            Table(tiles[~bright]).write(tilefile)
+        else:
+            Table(tiles[bright]).write(tilefile)
+
 
 # target selection
 paths = {"targets": "/project/projectdirs/desi/target/catalogs/dr7.1/PR372/", 
@@ -24,8 +30,8 @@ names = {"targets": "dr7.1-PR372.fits", "skies":"dr7.1-0.22.0.fits"}
 
 targetfile = os.path.join(paths["targets"], "targets-{}".format(names["targets"]))
 
-mtlfile = './data/mtl.fits'
-starfile = './data/std.fits'
+mtlfile = './data/mtl_{}.fits'.format(program)
+starfile = './data/std_{}.fits'.format(program)
 if (not os.path.exists(mtlfile)) or (not os.path.exists(starfile)):
     columns=['TARGETID','SUBPRIORITY', 'BRICKID', 'BRICK_OBJID', 'REF_ID',
             'PMRA', 'PMDEC', 'PMRA_IVAR', 'PMDEC_IVAR', 'FLUX_G', 'FLUX_R', 'FLUX_Z',
@@ -50,7 +56,11 @@ if not os.path.exists(mtlfile):
 
     # only include BGS and MWS
     isbgsmws = (mtl['BGS_TARGET']!=0) | (mtl['MWS_TARGET']!=0)
-    mtl = mtl[~isbgsmws]
+    if program=="bright":
+        mtl = mtl[isbgsmws]
+    else:
+        mtl = mtl[~isbgsmws]
+
 
     mtl.meta['EXTNAME'] = 'MTL'
     # rewrite NUMOBS for BGS targets
@@ -75,10 +85,13 @@ if not os.path.exists(starfile):
     starstd = (targetdata['DESI_TARGET'] & std_mask) != 0
     stardata = targetdata[starstd]
 
-    obscond = np.int_(np.repeat(obsconditions['DARK']|obsconditions['GRAY'], len(stardata))) 
-    stardata = np.lib.recfunctions.append_fields(
-    stardata, 'OBSCONDITIONS', obscond)  
+    if program=="bright":
+        obscond = np.int_(np.repeat(obsconditions['BRIGHT'], len(stardata)))
+    else:
+        obscond = np.int_(np.repeat(obsconditions['DARK']|obsconditions['GRAY'], len(stardata))) 
 
+    stardata = np.lib.recfunctions.append_fields(stardata, 'OBSCONDITIONS', obscond)  
+        
     fitsio.write(starfile, stardata, extname='STD')
     print('{} dark standards'.format(np.count_nonzero(stardata)))
     print('Finished with standards')
@@ -89,7 +102,7 @@ cmd += " --sky {} ".format(skyfile)
 cmd += " --stdstar {} ".format(starfile)
 cmd += " --fibstatusfile ./data/fiberstatus.ecsv"
 cmd += " --footprint {} ".format(tilefile)
-cmd += " --outdir data/fiber_output "
+cmd += " --outdir data/fiber_output_{} ".format(program)
 print(cmd)
 print('starting fiberassign')
 os.system(cmd)
