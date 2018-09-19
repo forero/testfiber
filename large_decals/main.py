@@ -67,6 +67,10 @@ if not os.path.exists(starfile):
     starstd = (targetdata['DESI_TARGET'] & std_mask) != 0
     stardata = targetdata[starstd]
 
+    obscond = np.int_(np.repeat(obsconditions['DARK']|obsconditions['GRAY'], len(stardata))) 
+    stardata = np.lib.recfunctions.append_fields(
+    stardata, 'OBSCONDITIONS', obscond)  
+
     fitsio.write(starfile, stardata, extname='STD')
     print('{} dark standards'.format(np.count_nonzero(stardata)))
     print('Finished with standards')
