@@ -48,12 +48,19 @@ if program == "bright":
         bright = tiles['PROGRAM']=='BRIGHT'
 
         if size=="small":
-            bright = bright & ((tiles['RA']>12) & (tiles['RA']<38) & (tiles['DEC']<13) & (tiles['DEC']>-13))
+            small = ((tiles['RA']>12) & (tiles['RA']<38) & (tiles['DEC']<13) & (tiles['DEC']>-13))
 
         if program=="bright":
-            Table(tiles[~bright]).write(tilefile)
+            if size=="small":
+                Table(tiles[(bright)&(small)]).write(tilefile)
+            else:
+                Table(tiles[bright]).write(tilefile)
         else:
-            Table(tiles[bright]).write(tilefile)
+            if size=="small":
+                Table(tiles[(~bright) & (small)]).write(tilefile)
+            else:
+                Table(tiles[~bright]).write(tilefile)
+
 print("wrote tiles to {}".format(tilefile))
 
 # target selectionza
