@@ -122,7 +122,7 @@ if not os.path.exists(starfile):
     stardata = np.lib.recfunctions.append_fields(stardata, 'OBSCONDITIONS', obscond)  
         
     fitsio.write(starfile, stardata, extname='STD')
-    print('{} dark standards'.format(np.count_nonzero(stardata)))
+    print('{} standards'.format(np.count_nonzero(stardata)))
     print('Finished with standards')
     
 # Running fiberassign
