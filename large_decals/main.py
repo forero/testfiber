@@ -27,7 +27,11 @@ targetfile = os.path.join(paths["targets"], "targets-{}".format(names["targets"]
 mtlfile = './data/mtl.fits'
 starfile = './data/std.fits'
 if (not os.path.exists(mtlfile)) or (not os.path.exists(starfile)):
-    targetdata = fitsio.read(targetfile, 'TARGETS')
+    columns = [
+        'TARGETID', 'RA', 'DEC', 'SUBPRIORITY', 'BRICKNAME',
+        'DESI_TARGET', 'BGS_TARGET', 'MWS_TARGET',
+    ]
+    targetdata = fitsio.read(targetfile, 'TARGETS', columns=columns)
     print('Done reading target data to comput mtl + star')
 
 #compute MTL
@@ -74,12 +78,10 @@ if not os.path.exists(output_bright):
 skyfile = '/project/projectdirs/desi/target/catalogs/dr7.1/0.22.0/skies-dr7.1-0.22.0.fits'
 cmd = "fiberassign --mtl {} ".format(mtlfile)
 cmd += " --sky {} ".format(skyfile)
-cmd += " --stdstar {} ".format(stdfile)
+cmd += " --stdstar {} ".format(starfile)
 cmd += " --fibstatusfile ./data/fiberstatus.ecsv"
 cmd += " --footprint {} ".format(tilefile)
-cmd += " --outdir output/ "
-cmd += " --nstarpetal 20 "
-cmd += " --nskypetal 80"
+cmd += " --outdir data/fiber_output "
 print(cmd)
 print('starting fiberassign')
 os.system(cmd)
