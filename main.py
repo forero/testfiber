@@ -42,40 +42,45 @@ skyfile = os.path.join(paths["skies"], "skies-{}".format(names["skies"]))
 tilefile = os.path.join(datadir, "input_tiles.fits")
 
 # tile selection
-if program == "bright":
-    if not os.path.exists(tilefile):
-        tiles = desimodel.io.load_tiles()
-        bright = tiles['PROGRAM']=='BRIGHT'
 
+if not os.path.exists(tilefile):
+    tiles = desimodel.io.load_tiles()
+    bright = tiles['PROGRAM']=='BRIGHT'
+    
+    if size=="small":
+        small = ((tiles['RA']>12) & (tiles['RA']<38) & (tiles['DEC']<13) & (tiles['DEC']>-13))
+
+    if program=="bright":
         if size=="small":
-            small = ((tiles['RA']>12) & (tiles['RA']<38) & (tiles['DEC']<13) & (tiles['DEC']>-13))
-
-        if program=="bright":
-            if size=="small":
-                Table(tiles[(bright)&(small)]).write(tilefile)
-            else:
-                Table(tiles[bright]).write(tilefile)
+            Table(tiles[(bright)&(small)]).write(tilefile)
         else:
-            if size=="small":
-                Table(tiles[(~bright) & (small)]).write(tilefile)
-            else:
-                Table(tiles[~bright]).write(tilefile)
+            Table(tiles[bright]).write(tilefile)
+    else:
+        if size=="small":
+            Table(tiles[(~bright) & (small)]).write(tilefile)
+        else:
+            Table(tiles[~bright]).write(tilefile)
 
 print("wrote tiles to {}".format(tilefile))
 
-# target selectionza
+# target selection
 if (not os.path.exists(mtlfile)) or (not os.path.exists(starfile)):
     columns=['TARGETID','SUBPRIORITY', 'BRICKID', 'BRICK_OBJID', 'REF_ID',
             'PMRA', 'PMDEC', 'PMRA_IVAR', 'PMDEC_IVAR', 'FLUX_G', 'FLUX_R', 'FLUX_Z',
             'FLUX_W1', 'FLUX_W2', 'FLUX_IVAR_G', 'FLUX_IVAR_R', 'FLUX_IVAR_Z',
             'FLUX_IVAR_W1', 'FLUX_IVAR_W2', 'RA_IVAR', 'DEC_IVAR',
             'EBV', 'MORPHTYPE',
+            'FIBERFLUX_G', 'FIBERFLUX_R', 'FIBERFLUX_Z',
+            'FIBERTOTFLUX_G', 'FIBERTOTFLUX_R', 'FIBERTOTFLUX_Z', 'HPXPIXEL',
             'MW_TRANSMISSION_G', 'MW_TRANSMISSION_R', 'MW_TRANSMISSION_Z',
             'PHOTSYS',
-            'FIBERFLUX_G', 'FIBERFLUX_R', 'FIBERFLUX_Z', 
-             'FIBERTOTFLUX_G', 'FIBERTOTFLUX_R', 'FIBERTOTFLUX_Z', 'HPXPIXEL',
-        'TARGETID', 'RA', 'DEC', 'SUBPRIORITY', 'BRICKNAME',
-        'DESI_TARGET', 'BGS_TARGET', 'MWS_TARGET']
+            'PSFDEPTH_G', 'PSFDEPTH_R', 'PSFDEPTH_Z', 
+            'GALDEPTH_G', 'GALDEPTH_R', 'GALDEPTH_Z', 
+            'SHAPEDEV_R', 'SHAPEDEV_E1', 'SHAPEDEV_E2', 'SHAPEEXP_R', 'SHAPEEXP_E1', 'SHAPEEXP_E2', 
+            'RA', 'DEC', 'SUBPRIORITY', 'BRICKNAME',
+            'DESI_TARGET', 'BGS_TARGET', 'MWS_TARGET']
+#to be implemented
+# 'PSFDEPTH_W1', 'PSFDEPTH_W1', 
 
     print('Started reading {}'.format(targetfile))
     targetdata = fitsio.read(targetfile, 'TARGETS', columns=columns)
