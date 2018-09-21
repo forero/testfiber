@@ -31,15 +31,18 @@ if not os.path.exists(fiberdir):
 #filenames
 paths = {"targets": "/project/projectdirs/desi/target/catalogs/dr7.1/PR372/", 
          "skies": "/project/projectdirs/desi/target/catalogs/dr7.1/0.22.0/", 
+         "gfas": "/project/projectdirs/desi/target/catalogs/dr7.1/0.22.0/",
 }
 
-names = {"targets": "dr7.1-PR372.fits", "skies":"dr7.1-0.22.0.fits"}
+names = {"targets": "dr7.1-PR372.fits", "skies":"dr7.1-0.22.0.fits", "gfas": "dr7.1.fits"}
 
 mtlfile = os.path.join(datadir, 'mtl_{}.fits'.format(size, program))
 starfile = os.path.join(datadir, 'std_{}.fits'.format(size, program))
 targetfile = os.path.join(paths["targets"], "targets-{}".format(names["targets"]))
 skyfile = os.path.join(paths["skies"], "skies-{}".format(names["skies"]))
+gfafile = os.path.join(paths["gfas"], "gfas-{}".format(names["gfas"]))
 tilefile = os.path.join(datadir, "input_tiles.fits")
+
 
 # tile selection
 
@@ -143,6 +146,7 @@ cmd += " --sky {} ".format(skyfile)
 cmd += " --stdstar {} ".format(starfile)
 cmd += " --fibstatusfile ./fiberstatus.ecsv"
 cmd += " --footprint {} ".format(tilefile)
+cmd += " --gfafile {}".format(gfafile)
 cmd += " --outdir {} ".format(fiberdir)
 
 print(cmd)
