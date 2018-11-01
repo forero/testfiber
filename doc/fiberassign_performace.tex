@@ -1,4 +1,6 @@
 \documentclass{article}
+\usepackage{hyperref}
+
 \title{Fiberassign performance}
 \author{Jaime E. Forero-Romero\\Universidad de los Andes}
 \date{\today}
@@ -9,6 +11,7 @@
 In this document I show that fiberassign meets the desired performance in terms of fiber usage for science targets, calibration targets, sky-monitoring locations and Guide/Focus/Alignment targets.
 \end{abstract}
 
+\section{Introduction}
 {\texttt fiberassign} is the software that performs the assignment of
 fibers to DESI targets. 
 
@@ -16,7 +19,44 @@ The following are the minimal requirements on its performance
 \begin{itemize}
 \item Fiber assignment uses required fraction of fibers IN.DAT-7002
 \item Fiber assignment provides sufficient calibration fibers IN.DAT-7003
-
 \end{itemize}
-In this document
+In this document I present the results of running {\texttt
+  fiberassign} on targets from DR7 to demonstrate how the two
+requirements mentioned above are met. 
+Furthermore I list some computational performance results to
+understand how long does it take to run the code and how many
+resources does it use.
+
+\section{Software and input data}
+
+For this report I use tag {\texttt 0.10.1} of {\texttt fiberassign}. 
+
+The input targetting data comes from DR7. On NERSC the files can be found here:
+{\texttt{/project/projectdirs/desi/target/catalogs/dr7.1/PR372/}}
+
+The targeting files need to be prepared in order to pass them to
+fiberassign.
+The code that prepares the data and runs fiberassign can be found
+here:
+\url{https://github.com/forero/testfiber/blob/master/main.py}.
+The script needs to be executed as {\texttt{python main.py --program dark
+--size large}} to produce the outputs analized in this report.
+
+
+\section{Results}
+
+
+We only use target that can be observed in dark time. 
+With this restriction we end up with 7098 DESI tiles that correspond
+to dark time and overlap with the DR7.1 footprint. 
+This selection returns 36M targets, 1.3M standard stars and
+25M sky locations.
+
+Runnig this code on a Cori login node takes up to 38GB of RAM and
+takes 2 hours to run. The wallclock time is proportional to the number
+of tiles. In this case we have that the code assigns on average one
+tile per second. 
+
+
+
 \end{document}
